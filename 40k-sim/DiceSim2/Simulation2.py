@@ -1,13 +1,12 @@
-#! /usr/bin/env python
-# -*- coding:Utf-8 -*-
+
 
 """
 Auteur: Samuel Turgeon
 Pour le plaisir personnel
 
-Ce program est crée pour simuler des jets de dés qui suivent les règles de wh40k. 
+Ce program est cree pour simuler des jets de des qui suivent les règles de wh40k. 
 
-Une règle spécial doit modifier le résultat qui lui est donné et doit RETOURNER une attaque.
+Une regle special doit modifier le résultat qui lui est donne et doit RETOURNER une attaque.
 """
 
 from copy import copy
@@ -27,7 +26,7 @@ class Simulation():
     
     def __init__(self):
         
-        self.shooters = [] #Contient les profils des différentes attaques
+        self.shooters = [] #Contient les profils des differentes attaques
         self.target = Defense(4,1,3,None,None)
         self.target.FnP = [0]
         self.attackers = []
@@ -42,8 +41,8 @@ class Simulation():
     def hit_roll(self):
         
         """
-        Number est le nombre de dé à lancer
-        target nombre pour être considéré un succès  (Pour une save c'est l'inverse)
+        Number est le nombre de de e lancer
+        target nombre pour être considéré un succes  (Pour une save c'est l'inverse)
         
         functions is a list of function to run on the results after reroll 
         Each function needs to be added in order of resolution
@@ -92,8 +91,8 @@ class Simulation():
     def wound_roll(self):
         
         """
-        Number est le nombre de dé à lancer
-        target nombre pour être considéré un succès  (Pour une save c'est l'inverse)
+        Number est le nombre de de à lancer
+        target nombre pour être considéré un succes  
         
         functions is a list of function to run on the results after reroll 
         Each function needs to be added in order of resolution
@@ -126,8 +125,8 @@ class Simulation():
     def save_roll(self):
         
         """
-        Number est le nombre de dé à lancer
-        target nombre pour être considéré un succès  (Pour une save c'est l'inverse)
+        Number est le nombre de de à lancer
+        target nombre pour être considere un succes 
         
         functions is a list of function to run on the results after reroll 
         Each function needs to be added in order of resolution
@@ -254,7 +253,7 @@ class Simulation():
     def determine_attack(self, attack):
         
         """
-        Une fonction pour déterminer le nombre d'attaque des modèles avec des nombres aléatoires
+        Une fonction pour determiner le nombre d'attaque des modèles avec des nombres aleatoires
         
         Elle fait la lecture du nombre d'attaque et fait la bonne truc lol
         
@@ -333,8 +332,8 @@ class Simulation():
     
     def determine_save(self, attack):
         """
-        Une fonction pour déterminer la save du défendeur
-        Elle va appliqué à la save
+        Une fonction pour determiner la save du défendeur
+        Elle va applique à la save
         Puis retourner le plus haut entre la save modifié et la save invuln
         """
         

@@ -6,7 +6,8 @@ import csv
 
 import tkinter as tk
 from DiceSim2 import Attack
-from SpecialRules import Special_Rules
+from SpecialRules import SpecialRules
+
 class AttackRulesInput():
     
     
@@ -31,14 +32,14 @@ class AttackRulesInput():
             
     def populate_Rules_Listbox(self):
         
-        ##noms des règles sur les jets pour toucher
-        hit_rules_names_list = Special_Rules.Special_Rules.build_hit_rule_list()
+        ##noms des regles sur les jets pour toucher
+        hit_rules_names_list = SpecialRules.SpecialRules.build_hit_rule_list()
         self.Entry_Hit_Rules.config(height = len(hit_rules_names_list))
         for item in hit_rules_names_list:
             self.Entry_Hit_Rules.insert(tk.END, item)
         
-        ##noms des règle sur les jets pour blesser
-        wnd_rules_names_list = Special_Rules.Special_Rules.build_wnd_rule_list()
+        ##noms des regle sur les jets pour blesser
+        wnd_rules_names_list = SpecialRules.SpecialRules.build_wnd_rule_list()
         self.Entry_Wnd_Rules.config(height = len(wnd_rules_names_list))
         for item in wnd_rules_names_list:
             self.Entry_Wnd_Rules.insert(tk.END, item)
@@ -71,7 +72,7 @@ class AttackRulesInput():
         
         self.Hit_Rules_Frame = tk.Frame(self.root)
         self.Hit_Rules_Frame.grid(row = 2, column = self.currentColumn)
-        self.Hit_Rules_Add = tk.Button(self.Hit_Rules_Frame, text="ADD", command = self.add_Hit_Rule())
+        self.Hit_Rules_Add = tk.Button(self.Hit_Rules_Frame, text="ADD", command = self.add_Hit_Rule)
         self.Hit_Rules_Add.grid(row = 0, column = 0)
         self.Entry_Hit_Rules = tk.Listbox(self.Hit_Rules_Frame)
         self.Entry_Hit_Rules.grid(row = 0, column = 1)
@@ -84,12 +85,26 @@ class AttackRulesInput():
         self.Entry_Wnd_Rules = tk.Listbox(self.Wnd_Rules_Frame)
         self.Entry_Wnd_Rules.grid(row = 0, column = 1)
         
+
+        
         self.populate_Rules_Listbox()
         
     
     def add_Hit_Rule(self):
         
-        pass    
+        if(self.Entry_Hit_Rules.curselection()):
+            csel = self.Entry_Hit_Rules.curselection()
+            cgrid = self.Hit_Rules_Add.grid_info()
+            crow = cgrid['row']
+            self.Hit_Rules_Add.grid(row = crow + 1, column = 0 )
+            self.Entry_Hit_Rules.grid(row = crow + 1, column = 1)
+            
+            text_added_rule = tk.StringVar()
+            text_added_rule.set(self.Entry_Hit_Rules.get(csel))
+            label_added_rule = tk.Label(self.Hit_Rules_Frame, textvariable=text_added_rule)
+            label_added_rule.grid(row = crow, column = 0)
+
+            self.Entry_Hit_Rules.delete(csel)
     
     def add_Wnd_Rule(self):
         

@@ -1,5 +1,4 @@
-#! /usr/bin/env python
-# -*- coding:Utf-8 -*-
+
 
 import tkinter as tk
 
@@ -196,11 +195,12 @@ class DefenseUI(tk.Frame):
             FnP = []
             
             moral_rule_selection = self.Entry_Moral_Rule.curselection()
+            print(moral_rule_selection)
             moral_rule = ""
             if(moral_rule_selection):
                 
                 moral_rule = self.Entry_Moral_Rule.get(moral_rule_selection)
-                
+                print(moral_rule)
             else:
                 
                 moral_rule = "NONE"
@@ -235,7 +235,7 @@ class DefenseUI(tk.Frame):
             
             
                 
-        else: raise ValueError("Valeur doit être numérique")       
+        else: raise ValueError("Valeur doit être numerique")       
         return retour
 
     def clean_ISV(self, input):

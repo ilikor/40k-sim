@@ -3,12 +3,12 @@ Created on Dec 4, 2017
 
 @author: Samuel
 '''
-import SpecialRules.Special_Rules as Special_Rules
+import SpecialRules.SpecialRules as SpecialRules
 import copy
 import numpy
 import DiceSim2.RollingFunctions as RF
 
-class Exploding(Special_Rules):
+class Exploding(SpecialRules):
     '''
     classdocs
     '''

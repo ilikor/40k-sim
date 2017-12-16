@@ -1,5 +1,5 @@
 Rending
 Sniper
 Haywire
-More Damage
+MoreDamage
 Fireblade

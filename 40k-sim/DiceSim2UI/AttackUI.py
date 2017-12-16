@@ -1,9 +1,7 @@
 
-#! /usr/bin/env python
-# -*- coding:Utf-8 -*-
 
 import tkinter as tk
-from DiceSim2UI import Input_AttackUI
+from DiceSim2UI import InputAttackUI
 
 from functools import partial
 
@@ -104,7 +102,7 @@ class AttackUI(tk.Frame):
         
     def addInputAttackUI(self):
 
-        newAtkUI = Input_AttackUI.AtkInput(self, self.currentColumn)
+        newAtkUI = InputAttackUI.AtkInput(self, self.currentColumn)
         self.attackUIList.append(newAtkUI)      
         self.currentColumn += 1
         

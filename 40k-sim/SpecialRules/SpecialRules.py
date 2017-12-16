@@ -1,9 +1,8 @@
-#! /usr/bin/env python
-# -*- coding:Utf-8 -*-
+
 import os
 from os import path
 
-class Special_Rules(object):
+class SpecialRules(object):
     """
     Classe de base avec une fonction rule qui ne fait rien. Principalement pour faire du polymorphisme � partir des classes enfants de celle-ci
     """

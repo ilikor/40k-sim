@@ -1,6 +1,4 @@
 
-#! /usr/bin/env python
-# -*- coding:Utf-8 -*-
 
 import tkinter as tk
 from DiceSim2 import Attack

@@ -1,5 +1,4 @@
-#! /usr/bin/env python
-# -*- coding:Utf-8 -*-
+
 
 from decimal import *
 import tkinter.ttk as ttk
@@ -81,7 +80,7 @@ class SimUI():
     
     def figureCanvas(self):
         """
-        On dessine le graph, sur cet élément, des résultats de morts ou wounds pour voir la distribution
+        On dessine le graph, sur cet element, des resultats de morts ou wounds pour voir la distribution
         """
         
         

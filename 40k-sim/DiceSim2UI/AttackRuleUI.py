@@ -1,11 +1,8 @@
-#! /usr/bin/env python
-# -*- coding:Utf-8 -*-
-
 
 import tkinter as tk
 from functools import partial
 
-from DiceSim2UI import Input_AttackRuleUI
+from DiceSim2UI import InputAttackRuleUI
 
 class AttackRuleUI(tk.Frame):
     '''
@@ -50,7 +47,7 @@ class AttackRuleUI(tk.Frame):
         
     def addingRuleUI(self):
        
-        self.rule_entry_list.append(Input_AttackRuleUI.AttackRulesInput(self, len(self.rule_entry_list)+1))
+        self.rule_entry_list.append(InputAttackRuleUI.AttackRulesInput(self, len(self.rule_entry_list)+1))
         
         
     
