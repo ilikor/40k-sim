@@ -5,7 +5,7 @@
 import tkinter as tk
 from functools import partial
 
-from DiceSim2UI import Input_AttackUI
+from DiceSim2UI import Input_AttackRuleUI
 
 class AttackRuleUI(tk.Frame):
     '''
@@ -18,10 +18,12 @@ class AttackRuleUI(tk.Frame):
         '''
         Constructor
         '''
-            
+        
+        self.rule_entry_list = []
+        
         tk.Frame.__init__(self, root)    
         self.ruleUI()
-        
+        self.addingRuleUI()
     def ruleUI(self):
         
         width_text = 10
@@ -48,5 +50,7 @@ class AttackRuleUI(tk.Frame):
         
     def addingRuleUI(self):
        
-        pass 
+        self.rule_entry_list.append(Input_AttackRuleUI.AttackRulesInput(self, len(self.rule_entry_list)+1))
+        
+        
     

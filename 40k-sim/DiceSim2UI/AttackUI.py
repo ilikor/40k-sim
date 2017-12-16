@@ -108,6 +108,7 @@ class AttackUI(tk.Frame):
         self.attackUIList.append(newAtkUI)      
         self.currentColumn += 1
         
-    def removeInputAttackUI(self):       
-        self.attackUIList.pop().destroy()
+    def removeInputAttackUI(self):
+        if(len(self.attackUIList) > 0):       
+            self.attackUIList.pop().destroy()
 

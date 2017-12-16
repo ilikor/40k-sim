@@ -138,13 +138,15 @@ class DefenseUI(tk.Frame):
         #self.Label_Moral_Rule = tk.Label(self, textvariable=self.Label_Moral_Rule, width=width_text)
         #self.Label_Moral_Rule.grid(row = 8, column = 0)
         
-        self.Entry_Moral_Rule = tk.Listbox(self)
+        self.Entry_Moral_Rule = tk.Listbox(self, exportselection=False)
         self.Entry_Moral_Rule.config(height = 5, width=width_text)
-        self.Entry_Moral_Rule.insert(tk.END, "NONE")
-        self.Entry_Moral_Rule.insert(tk.END, "CAN")
-        self.Entry_Moral_Rule.insert(tk.END, "MUST")
-        self.Entry_Moral_Rule.insert(tk.END, "COMMI")
-        self.Entry_Moral_Rule.insert(tk.END, "KNIFE")
+        for item in ["NONE", "CAN", "MUST", "COMMI", "KNIFE"]:
+            self.Entry_Moral_Rule.insert(tk.END, item)
+        #self.Entry_Moral_Rule.insert(tk.END, "NONE")
+        #self.Entry_Moral_Rule.insert(tk.END, "CAN")
+        #self.Entry_Moral_Rule.insert(tk.END, "MUST")
+        #self.Entry_Moral_Rule.insert(tk.END, "COMMI")
+        #self.Entry_Moral_Rule.insert(tk.END, "KNIFE")
         self.Entry_Moral_Rule.grid(row = 8, column = 1)
         
         self.Entry_Moral_Rule.selection_set(0, last=None)

@@ -1,20 +1,46 @@
-'''
-Created on Dec 4, 2017
-
-@author: Samuel
-'''
+#! /usr/bin/env python
+# -*- coding:Utf-8 -*-
+import os
+from os import path
 
 class Special_Rules(object):
-    '''
-    Classe de base avec une fonction rule qui ne fait rien. Principalement pour faire du polymorphisme à partir des classes enfants de celle-ci
-    '''
+    """
+    Classe de base avec une fonction rule qui ne fait rien. Principalement pour faire du polymorphisme ï¿½ partir des classes enfants de celle-ci
+    """
 
 
     def __init__(self):
-        '''
+        """
         Constructor
-        '''
+        """
         
+        
+        
+        
+    @staticmethod
+    def build_hit_rule_list():
+        
+        basepath = path.dirname(__file__)
+        hitRulesNames = []
+        nomFichier = "HitRulesList.txt"
+        os.chdir(basepath)
+        file = open( nomFichier, newline='' )
+        for row in file:
+            hitRulesNames.append(row)
+            
+        return hitRulesNames 
+    
+    @staticmethod
+    def build_wnd_rule_list():
+        basepath = path.dirname(__file__)
+        wndRulesNames = []
+        nomFichier = "WndRulesList.txt"
+        os.chdir(basepath)
+        file = open(nomFichier, newline='')
+        for row in file:
+            wndRulesNames.append(row)
+        
+        return wndRulesNames
         
     def rule(self, resultats, attacker):
         
