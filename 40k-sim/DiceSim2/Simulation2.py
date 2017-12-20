@@ -50,7 +50,7 @@ class Simulation():
         
        # print("hit roll")
         
-        self.next_shooters = []
+        next_shooters = []
         
         for i in range(len(self.shooters)):
             
@@ -63,9 +63,13 @@ class Simulation():
             results = RF.rollingd6s(dices, attack_type.RHT)
             #print(results)
 
-            for rule in attack_type.hit_rules:
+            for specialRule in attack_type.hit_rules:
                 
-                rule(results, attack_type)
+                temp = specialRule.rule(results, attack_type)
+                if(temp != None):
+                    
+                    next_shooters.append(temp)
+                    
                 
            # print(results)
             
@@ -83,9 +87,9 @@ class Simulation():
             
             temp = copy(attack_type)
             temp.R = sum_succ
-            self.next_shooters.append(temp)   
+            next_shooters.append(temp)   
         
-        self.shooters = self.next_shooters
+        self.shooters = copy(next_shooters)
         
         
     def wound_roll(self):
@@ -101,26 +105,28 @@ class Simulation():
        # print("wound roll")
         
         next_shooters = []
-        
+        #print(self.shooters)
+        #print("Just Before")
         for attack_type in self.shooters:
-            
-            target = self.determine_wound_roll(attack_type)
 
+            target = self.determine_wound_roll(attack_type)
             results = RF.rollingd6s(attack_type.R, attack_type.RWT)
-          #  print(results)
-            
+
+            for specialRule in attack_type.wnd_rules:
+                #print(specialRule)
+                temp = specialRule.rule(results, attack_type)
+                if(temp != None):
+                    
+                    next_shooters.append(temp)
+                    
             success = results[(target-1):]
-            
             sum_succ = int(numpy.sum(success))  
-                
-          #  print(success)
-          #  print(sum_succ)
             
             temp = copy(attack_type)
             temp.R = sum_succ
             next_shooters.append(temp)   
         
-        self.shooters = next_shooters
+        self.shooters = copy(next_shooters)
     
     def save_roll(self):
         
@@ -135,9 +141,9 @@ class Simulation():
         #print("save roll")
         
         next_shooters = []
-        
+        #print(self.shooters)
         for attack_type in self.shooters:
-            
+            #print(attack_type.AP)
             target = self.determine_save(attack_type)
             
             results = RF.rollingd6s(attack_type.R)
@@ -196,12 +202,24 @@ class Simulation():
                     results = RF.rollingd6s(int(dmgI), 0)
                     succ = int(numpy.sum(results[(FNP-1):]))
                     dmgI -= succ
-
-                if(dmgI+wounds_dealt_to_model >= self.target.W):
-                    dead += 1
-                    wounds_dealt_to_model = 0
+                if(attack_type.AP == "MW"):
+                    
+                    while(dmgI > 0):
+                        
+                        wounds_dealt_to_model += 1
+                        dmgI -= 1
+                        
+                        if(wounds_dealt_to_model >= self.target.W):
+                            dead += 1
+                            wounds_dealt_to_model = 0
+                            
+                        
                 else:
-                    wounds_dealt_to_model += dmgI
+                    if(dmgI+wounds_dealt_to_model >= self.target.W):
+                        dead += 1
+                        wounds_dealt_to_model = 0
+                    else:
+                        wounds_dealt_to_model += dmgI
                     
       #  print(dead)
        # print(wounds_dealt_to_model)      
@@ -215,6 +233,8 @@ class Simulation():
         ded = 0
         roll = numpy.random.randint(1,7)
         total =  roll + dead
+        
+        
         
         if(total > morale):
             
@@ -237,7 +257,10 @@ class Simulation():
             elif(reroll == "KNIFE" and roll == 6):
                 
                 total = 0
-                  
+                
+            elif(reroll == "AUTO"):
+                
+                total = 0
             
             if(total > morale):
                 
@@ -337,8 +360,14 @@ class Simulation():
         Puis retourner le plus haut entre la save modifié et la save invuln
         """
         
+        
+        
         APa = attack.AP
         save = self.target.SV
+        
+        if(APa == "MW"):
+            
+            return 7
         
         mod_save = save - APa
         
@@ -440,13 +469,13 @@ class Simulation():
         
         moral = self.moral_phase(dead, self.target.moral_rule) + copy(dead)
         
-        if(dead > 10):
+        if(dead > self.target.unit_size):
             
-            dead = 10
+            dead = self.target.unit_size
         
-        if(moral > 10):
+        if(moral > self.target.unit_size):
             
-            moral = 10
+            moral = self.target.unit_size
         
         eff = self.efficiency(moral)
         

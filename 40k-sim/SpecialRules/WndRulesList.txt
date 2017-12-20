@@ -2,4 +2,4 @@ Rending
 Sniper
 Haywire
 MoreDamage
-Fireblade
+MurderSword

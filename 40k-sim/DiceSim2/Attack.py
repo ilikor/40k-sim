@@ -5,6 +5,7 @@ Created on Nov 30, 2017
 '''
 
 import copy
+import SpecialRules
 
 class Attack(object):
     '''
@@ -27,6 +28,7 @@ class Attack(object):
         self.set_reroll()
         self.set_Mods(0,0)
         self.hit_rules = []
+        self.wnd_rules = []
     
     def set_reroll(self, RHTi=0, RWTi = 0):
         
@@ -39,21 +41,36 @@ class Attack(object):
         self.Wound_Mod = WMi
         self.Save_Mod = SVi
     
-    def set_Rend(self, Ti, APi):
+    def add_hit_rules(self, list):
         
-        self.Rend_Target = Ti
-        self.Rend_Ap = APi
+        for element in list:
+            
+            self.add_hit_rule(element)
     
+    def add_hit_rule(self, params):
+        
+        target, effect, name = params
+        
+        ruleclass = SpecialRules.SpecialRule.SpecialRule.find_hit_rule_from_name(name)
+        
+        rule = ruleclass(params)
+        self.hit_rules.append(rule)
     
-    def set_Exploding(self, Ei, EAi):
+    def add_wnd_rules(self, list):
         
-        self.Exploding_Target = Ei
-        self.Exploding_Add = EAi
+        print(list)
+        for element in list:
+            
+            self.add_wnd_rule(element)
+    
+    def add_wnd_rule(self, params):
         
-    def set_Snipe(self, Si, SDi):
+        target, effect, name = params
         
-        self.Snipe_Target = Si
-        self.Snipe_Dmg = SDi
+        ruleclass = SpecialRules.SpecialRule.SpecialRule.find_wnd_rule_from_name(name)
+        
+        rule = ruleclass(params)
+        self.wnd_rules.append(rule)
     
     def set_Points(self, points_init):
         
