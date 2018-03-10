@@ -1,19 +1,26 @@
+#! /usr/bin/env python
+# -*- coding:Utf-8 -*-
 
+# TODO: Module Docstring
 
 import copy
 
 import numpy
 
-class Rending():
-    
 
+class Rending():
+    # TODO: Class Docstring
 
     def __init__(self, params):
 
         self.target_number = int(params[0].strip("+"))
         self.new_AP = int(params[1])
         self.priorite = 3
+    
+    def special_rule(self, results, attack):
         
+        # TODO: Implement Me and make this a child of special rule
+        pass    
     
     def rule(self, resultats, attack_type):
         """

@@ -1,35 +1,30 @@
+#! /usr/bin/env python
+# -*- coding:Utf-8 -*-
 
-
-import copy
+"""
+Ce module contient le nécessaire pour appliquer la règle spécial autohit de wh40k
+la function importante est special_rule de l'objet Autohit
+"""
 
 import numpy
 
-class Autohit():
-    
+from SpecialRules.SpecialRule import SpecialRule
 
 
+class Autohit(SpecialRule):
+    """ 
+    encapsule special_rule pour permettre polymorphisme 
+    Elle change le hit_rate de l'attaquant
+    """
+ 
     def __init__(self, params):
         
-        
-        pass
+        self.name = params[2]
     
-    def rule(self, resultats, attack_type):
+    def special_rule(self, results, attack):
         """
-        Autohit will create a new shooter for wounding which considers everything hitting :)
+        Modifie attack pour changer son hit_rate
         """
+        attack.hit_rate = "AUTO"
         
-    
-        
-        temp = copy.copy(attack_type)
-        temp.R = int(numpy.sum(resultats))
-        #print(temp.R)
-        resultats[:] = 0 
-        
-        #print("This is implemented - AUTOHIT")
-        #print("BETA TEST")
-        
-        return temp
-
-        
-       
-        
+        return numpy.array([]), None

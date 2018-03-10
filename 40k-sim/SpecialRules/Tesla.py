@@ -1,13 +1,17 @@
+#! /usr/bin/env python
+# -*- coding:Utf-8 -*-
 
+# TODO: Module Docstring
 
-import copy
+from copy import copy
+from copy import deepcopy
 import numpy
 import DiceSim2.RollingFunctions as RF
-
-class Tesla():
-
+from SpecialRules.SpecialRule import SpecialRule
 
 
+class Tesla(SpecialRule):
+    # TODO: Class Docstring
     def __init__(self, params):
         
         print(params[0])
@@ -16,12 +20,22 @@ class Tesla():
         self.add_attacks = int(params[1])
         self.priorite = 2 #La priorite sera utilise pour savoir l'ordre que les regles sont applique, placeholder
         
+    def special_rule(self, results, attack):
+        rtarget_number = self.target_number - attack.hit_mod
+        tesla_results = numpy.zeros(6)
+        tesla_results[rtarget_number - 1:] = results[(rtarget_number - 1):]
+        tesla_results = tesla_results * self.add_attacks
+        
+        results = results + tesla_results
+        
+        return numpy.array([]), None
+    
     def rule(self, resultats, attack_type):
         
         
         target = self.target_number - attack_type.Hit_Mod
         #print(resultats)
-        tesla = copy.copy(resultats[(target-1):]) 
+        tesla = copy(resultats[(target-1):]) 
         #print(tesla)
         sum_tesla = int(numpy.sum(tesla)) * self.add_attacks
         
