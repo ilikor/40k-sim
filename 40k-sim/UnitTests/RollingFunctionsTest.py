@@ -10,7 +10,7 @@ class RollingFunctionsTest(unittest.TestCase):
         self.number = 10000
         self.reroll_target = 3
 
-    def test_rollingd6_interface(self):G:
+    def test_rollingd6_interface(self):
         values = RF.rollingd6s(self.number)
         self.assertTrue(len(values) == 6)
 
