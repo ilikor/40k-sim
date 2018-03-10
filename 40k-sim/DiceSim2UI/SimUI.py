@@ -30,7 +30,7 @@ class SimUI():
         self.color_cycle = ["b", "g", "y", "k", "r", "c", "m" ]
         self.color_number = 0
          
-        numpy.set_printoptions(precision = 3, suppress = True)  #We don't need a lot of fucking numbers
+        numpy.set_printoptions(precision = 3, suppress = True)  #We don't need a lot of numbers
      
         self.root = tk.Tk()
         self.sim = Simulation()
