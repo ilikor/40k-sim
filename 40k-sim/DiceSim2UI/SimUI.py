@@ -67,10 +67,10 @@ class SimUI:
         self.ButtonDefenderFrame = tk.Frame(self.root)
         self.ButtonDefenderFrame.grid(row=0, column=2)
      
-        self.FnP_Add_Button = tk.Button(self.ButtonDefenderFrame, text="Add FnP", command=self.defender.add_FnP)
+        self.FnP_Add_Button = tk.Button(self.ButtonDefenderFrame, text="Add FnP", command=self.defender.add_fnp)
         self.FnP_Add_Button.grid(row=0, column=0)
          
-        self.FnP_Remove_Button = tk.Button(self.ButtonDefenderFrame, text="RIP FnP", command=self.defender.remove_FnP)
+        self.FnP_Remove_Button = tk.Button(self.ButtonDefenderFrame, text="RIP FnP", command=self.defender.remove_fnp)
         self.FnP_Remove_Button.grid(row=0, column=1)
          
     def button_clean_sim(self):
@@ -86,7 +86,7 @@ class SimUI:
 
         try:
             attackers = self.att.gather_input_from_child()
-            defende = self.defender.gather_Input()
+            defende = self.defender.gather_input()
             self.sim.change_Defender(defende)
             self.sim.add_Attackers(attackers)
 

@@ -113,4 +113,3 @@ class AttackUI(tk.Frame):
     def remove_input_attackui(self):
         if len(self.attackUIList) > 0:
             self.attackUIList.pop().destroy()
-
