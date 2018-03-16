@@ -23,7 +23,7 @@ class Haywire(SpecialRule):
         """
         temp = params[0].split(",")
         nom = params[2]
-        self.target_number =  [int(temp[0].strip("+")), int(temp[1].strip("+"))]
+        self.target_number = [int(temp[0].strip("+")), int(temp[1].strip("+"))]
         temp = params[1].split(",")
         self.add_dmg = [temp[0], temp[1]]
         self.priorite = 3
@@ -54,8 +54,7 @@ class Haywire(SpecialRule):
         temp = Att.Attack()
         temp.ap = "MW"
         return numpy.array([sum_dmg_haywire]), temp
-    
-    
+
     def dmg_helper(self, dmg):
         
         split = dmg.split("d")

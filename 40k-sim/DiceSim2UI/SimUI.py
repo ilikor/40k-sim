@@ -46,32 +46,32 @@ class SimUI:
         self.defender.grid(row=1, column=2)
 
         # Adding frame with buttons for attack UI
-        self.ButtonFrame = tk.Frame(self.root)
-        self.ButtonFrame.grid(row=0, column=0, sticky=tk.W + tk.E)
+        self.frame_button = tk.Frame(self.root)
+        self.frame_button.grid(row=0, column=0, sticky=tk.W + tk.E)
          
-        self.Button_Add = tk.Button(self.ButtonFrame, text="Add Shooters", command=self.att.add_input_attackui)
-        self.Button_Add.grid(row=0, column=0, sticky=tk.W)
+        self.add_button = tk.Button(self.frame_button, text="Add Shooters", command=self.att.add_input_attackui)
+        self.add_button.grid(row=0, column=0, sticky=tk.W)
          
-        self.Button_Remove = tk.Button(self.ButtonFrame, text="Remove", command=self.att.remove_input_attackui)
-        self.Button_Remove.grid(row=0, column=1, sticky=tk.E)
+        self.remove_button = tk.Button(self.frame_button, text="Remove", command=self.att.remove_input_attackui)
+        self.remove_button.grid(row=0, column=1, sticky=tk.E)
         # Adding frame with buttons for simulation purposes
-        self.ButtonSimFrame = tk.Frame(self.root)
-        self.ButtonSimFrame.grid(row=0, column=1)
+        self.sim_frame_button = tk.Frame(self.root)
+        self.sim_frame_button.grid(row=0, column=1)
          
-        self.Button_Simulation = tk.Button(self.ButtonSimFrame, text="Simulate", command=self.button_simulate)
-        self.Button_Simulation.grid(row=0, column=0)
+        self.simulation_button = tk.Button(self.sim_frame_button, text="Simulate", command=self.button_simulate)
+        self.simulation_button.grid(row=0, column=0)
          
-        self.Button_Clean = tk.Button(self.ButtonSimFrame, text="Clean", command=self.button_clean_sim)
-        self.Button_Clean.grid(row=0, column=1)
+        self.clean_button = tk.Button(self.sim_frame_button, text="Clean", command=self.button_clean_sim)
+        self.clean_button.grid(row=0, column=1)
         # Adding frame with buttons for defense UI
-        self.ButtonDefenderFrame = tk.Frame(self.root)
-        self.ButtonDefenderFrame.grid(row=0, column=2)
+        self.defender_frame_button = tk.Frame(self.root)
+        self.defender_frame_button.grid(row=0, column=2)
      
-        self.FnP_Add_Button = tk.Button(self.ButtonDefenderFrame, text="Add FnP", command=self.defender.add_fnp)
-        self.FnP_Add_Button.grid(row=0, column=0)
+        self.fnp_add_button = tk.Button(self.defender_frame_button, text="Add FnP", command=self.defender.add_fnp)
+        self.fnp_add_button.grid(row=0, column=0)
          
-        self.FnP_Remove_Button = tk.Button(self.ButtonDefenderFrame, text="RIP FnP", command=self.defender.remove_fnp)
-        self.FnP_Remove_Button.grid(row=0, column=1)
+        self.fnp_remove_button = tk.Button(self.defender_frame_button, text="RIP FnP", command=self.defender.remove_fnp)
+        self.fnp_remove_button.grid(row=0, column=1)
          
     def button_clean_sim(self):
          
@@ -87,8 +87,8 @@ class SimUI:
         try:
             attackers = self.att.gather_input_from_child()
             defende = self.defender.gather_input()
-            self.sim.change_Defender(defende)
-            self.sim.add_Attackers(attackers)
+            self.sim.change_defender(defende)
+            self.sim.add_attackers(attackers)
 
             deds, wnd, eff, moral = self.sim.overall_Sim(5000)
              

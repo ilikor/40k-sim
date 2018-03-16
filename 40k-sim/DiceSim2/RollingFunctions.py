@@ -12,7 +12,6 @@ def rollingd6s(number, reroll=None):
 
     :param number: nombre de dé à rouler
     :param reroll: Value under which you reroll
-    :param fast: True or False -> Uses fast rolling or not (Should be true)
     :return: [#1, #2, #3, #4, #5, #6]
     """
 
@@ -51,18 +50,19 @@ def rollingd3s(number, reroll = 0):
     
     return results
 
-def rollingdXs(number, dX):
+
+def rollingdxs(number, dx):
 
     """
     Result is the count of [0,1,...,dX ]
     1,2,5,5,6 give result [1,1,0,0,2,1]
     """
-    results = numpy.zeros(dX)
+    results = numpy.zeros(dx)
     
-    base = range(0,dX)
+    base = range(0, dx)
     _, base_count = numpy.unique(base, return_counts=True)
 
-    roll = numpy.random.randint(1, dX + 1, (number, 1))
+    roll = numpy.random.randint(1, dx + 1, (number, 1))
     roll = numpy.append(roll, base)
     _, counts = numpy.unique(roll, return_counts=True)
     #roll = numpy.random.randint(1,dX+1)
@@ -70,14 +70,16 @@ def rollingdXs(number, dX):
 
     return results
 
-def rollingdXs_time_dependant(number, dX):
+
+def rollingdxs_time_dependant(number, dx):
     """
     This is mostly used for damage rolls as the roll most be done 1 after the other because of multi-wounds models and FnP and shit like that
     """
     
-    results = numpy.random.randint(1, dX + 1, (number, 1))
+    results = numpy.random.randint(1, dx + 1, (number, 1))
     
     return results
+
 
 if __name__ == '__main__':
     

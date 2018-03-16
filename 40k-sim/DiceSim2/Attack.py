@@ -6,106 +6,157 @@ from SpecialRules import SpecialRuleHelper as SR
 
 
 class Attack(object):
-    '''
-    classdocs
-    '''
+    """
 
-    def __init__(self, Ri=20, Hi=3, Si=4, APi=0, DMGi=1):
-        '''
-        Constructor
-        '''
-        self.R = Ri
-        
-        self.H = Hi
-        self.S = Si
+    """
 
-        self.AP = APi
-        
-        self.D = DMGi
+    def __init__(self, ri=20, hi=3, si=4, api=0, dmgi=1):
+        """
 
-        self.set_Mods(0, 0)
+        Parameters
+        ----------
+        ri
+        hi
+        si
+        api
+        dmgi
+        """
+        self.set_mods(0, 0)
         self.hit_rules = []
         self.wnd_rules = []
         
         self.points = 13
         self.models = 10
-        
-        self.hit_rate = Hi
-        self.s = Si
-        self.ap = APi
-        
-        self.hit_reroll = None
-        self.wnd_reroll = None
-        
+
+        self._attack = ri
+        self._hit_rate = hi
+        self._str = si
+        self._ap = api
+        self._dmg = dmgi
+        self._hit_reroll = None
+        self._wnd_reroll = None
+
+        self._hit_mod = 0
+        self._wnd_mod = 0
+        self._sv_mod = 0
+
+    @property
+    def attack(self):
+        return self._attack
+
+    @attack.setter
+    def attack(self, attack_init):
+        self._attack = attack_init
+
     @property
     def hit_rate(self):
         return self._hit_rate
+
     @hit_rate.setter
     def hit_rate(self, hit_rate_init):
-        if(hit_rate_init == "AUTO"):
+        if hit_rate_init == "AUTO":
             self._hit_rate = hit_rate_init
-        elif(type(hit_rate_init) is not int):
+        elif type(hit_rate_init) is not int:
             raise TypeError("La valeur pour toucher doit être un entier")
-        elif(hit_rate_init < 2):
+        elif hit_rate_init < 2:
             raise ValueError("La valeur pour toucher ne peut pas être inférieur à 2")
         self._hit_rate = hit_rate_init
+
     @property
-    def s(self):
-        return self._s
-    @s.setter
-    def s(self, s_init):
-        if(type(s_init) is not int):
+    def str(self):
+        return self._str
+
+    @str.setter
+    def str(self, str_init):
+        if type(str_init) is not int:
             raise TypeError("La force doit être un entier")
-        if(s_init < 1):
+        if str_init < 1:
             raise ValueError("La force ne peut pas être inférieur à 1")
-        self._s = s_init
+        self._str = str_init
+
     @property
     def ap(self):
         return self._ap
+
     @ap.setter
     def ap(self, ap_init):
-        if(ap_init == "MW"):
+        if ap_init == "MW":
             self._ap = ap_init
-        elif(type(ap_init) is not int):
+        elif type(ap_init) is not int:
             raise TypeError("L'AP doit être un entier")
-        elif(ap_init > 0):
+        elif ap_init > 0:
             raise ValueError("L'AP ne peut pas être positif")
         self._ap = ap_init
-    
+
+    @property
+    def dmg(self):
+        return self._dmg
+
+    @dmg.setter
+    def dmg(self, dmg_init):
+        self._dmg = dmg_init
+
     @property
     def hit_reroll(self):
         return self._hit_reroll
+
     @hit_reroll.setter
     def hit_reroll(self, hit_reroll_init):
-        if(hit_reroll_init is None):
+        if hit_reroll_init is None:
             self._hit_reroll = hit_reroll_init
-        elif(type(hit_reroll_init) is not int):
+        elif type(hit_reroll_init) is not int:
             raise TypeError("La valeur de maximale des rerolls doit être entière")
-        elif(hit_reroll_init < 1):
+        elif hit_reroll_init < 1:
             raise ValueError("La valeur des dés maximales à reroll ne peut pas être inférieur à 1")
         self._hit_reroll = hit_reroll_init
 
-    def set_reroll(self, RHTi=0, RWTi=0):
-        self.hit_reroll = RHTi
-        self.wnd_reroll = RWTi
+    @property
+    def wnd_reroll(self):
+        return self._hit_reroll
 
-        self.RHT = RHTi
-        self.RWT = RWTi
-        
-    def set_mods(self, hit_m_init=0, wnd_m_init=0, sv_m_init=0):
-        
-        self.hit_mod = hit_m_init
-        self.wnd_mod = wnd_m_init
-        self.sv_mod = sv_m_init
+    @wnd_reroll.setter
+    def wnd_reroll(self, wnd_reroll_init):
+        if wnd_reroll_init is None:
+            self._wnd_reroll = wnd_reroll_init
+        elif type(wnd_reroll_init) is not int:
+            raise TypeError("La valeur de maximale des rerolls doit être entière")
+        elif wnd_reroll_init < 1:
+            raise ValueError("La valeur des dés maximales à reroll ne peut pas être inférieur à 1")
+        self._wnd_reroll = wnd_reroll_init
 
-    def set_Mods(self, HMi=0, WMi=0, SVi=0):
+    @property
+    def hit_mod(self):
+        return self._hit_mod
 
-        self.Hit_Mod = HMi
-        self.hit_mod = HMi
-        self.Wound_Mod = WMi
-        self.wnd_mod = WMi
-        self.Save_Mod = SVi
-        self.sv_mod = SVi
+    @hit_mod.setter
+    def hit_mod(self, hit_mod_init):
+        self._hit_mod = hit_mod_init
+
+    @property
+    def wnd_mod(self):
+        return self._wnd_mod
+
+    @wnd_mod.setter
+    def wnd_mod(self, wnd_mod_init):
+        self._wnd_mod = wnd_mod_init
+
+    @property
+    def sv_mod(self):
+        return self._sv_mod
+
+    @sv_mod.setter
+    def sv_mod(self, sv_mod_init):
+        self._sv_mod = sv_mod_init
+
+    def set_reroll(self, rhti=0, rwti=0):
+        self.hit_reroll = rhti
+        self.wnd_reroll = rwti
+
+    def set_mods(self, hmi=0, wmi=0, svi=0):
+
+        self.hit_mod = hmi
+        self.wnd_mod = wmi
+        self.sv_mod = svi
 
     def add_hit_rules(self, list_rules):
 
@@ -132,19 +183,19 @@ class Attack(object):
         self.wnd_rules.append(rule)
 
     def marine(self):
-        self.R = 10
-        self.H = 3
-        self.S = 4
-        self.AP = 0
-        self.D = 1
+        self.r = 10
+        self.hit = 3
+        self.str = 4
+        self.ap = 0
+        self.dmg = 1
 
         self.set_reroll()
-        self.set_Mods(0, 0)
+        self.set_mods(0, 0, 0)
     
     def __repr__(self):
         sr = ""
-        sr += "Number of Dices : " + str(self.R) + "\n"
+        sr += "Number of Dices : " + str(self.r) + "\n"
         sr += "hit rate : " + str(self.hit_rate) + "\n"
-        sr += "S : " + str(self.S) + "\n"
-        sr += "AP : " + str(self.AP) + "\n"
+        sr += "S : " + str(self.str) + "\n"
+        sr += "AP : " + str(self.ap) + "\n"
         return sr

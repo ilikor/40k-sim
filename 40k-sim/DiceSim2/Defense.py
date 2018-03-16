@@ -1,7 +1,8 @@
 #! /usr/bin/env python
 # -*- coding:Utf-8 -*-
 
-
+from DiceSim2.RollingFunctions import rollingd6s
+import numpy
 
 class Defense(object):
     '''
@@ -24,11 +25,13 @@ class Defense(object):
         
         # New Attributes for property, also lowercase for pep8
         
-        self.t = Ti
-        self.w = Wi
-        self.sv = SVi
-        self.isv = ISVi
-        self.points = Points_Init
+        self._t = Ti
+        self._w = Wi
+        self._rem_w = self.w
+        self._sv = SVi
+        self._isv = ISVi
+        self._points = Points_Init
+
         
     @property
     def t(self):
@@ -87,10 +90,40 @@ class Defense(object):
     
     @points.setter
     def points(self, points_value):
-        if(type(points_value) is not int):
+        if type(points_value) is not int:
             raise TypeError("La valeur en point d'une figurine doit �tre enti�re")
-        if(points_value < 1):
+        if points_value < 1:
             raise ValueError("La valeur en point d'une figurine doit �tre sup�rieur � 1")
         self._points = points_value
-            
-        
+
+    @property
+    def rem_w(self):
+        return self._rem_w
+
+    @rem_w.setter
+    def rem_w(self, w_left):
+        self._rem_w = w_left
+
+    def feel_no_pain(self, dmg):
+        for fnp in self.f_n_p:
+            fnp_result = rollingd6s(dmg)
+            fnp_result[:fnp - 1] = 0
+            dmg -= numpy.sum(fnp_result)
+        return dmg
+
+    def deal_wounds(self, ap, dmg):
+        dead = 0
+
+        if ap == "MW":
+            dead += dmg//self.w
+            if self._rem_w <= dmg % self.w:
+                dead += 1
+                dmg -= self._rem_w
+                self._rem_w = self.w
+            self._rem_w -= dmg % self.w
+        else:
+            if dmg > self._rem_w:
+                dead += 1
+                self._rem_w = self.w
+            else:
+                self._rem_w -= dmg

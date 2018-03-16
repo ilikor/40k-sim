@@ -167,7 +167,7 @@ class AtkInput:
         stre = clean_hit_input(self.str_entry.get())
         wnd_mod = clean_hit_input(self.wnd_mod_entry.get())
         ap = clean_hit_input(self.ap_entry.get())
-        sv_mod = int(self.sv_mod_entry.get().strip("+"))
+        sv_mod = clean_hit_input(self.sv_mod_entry.get())
         dmg = self.dmg_entry.get()
 
         attks = self.atk_entry.get()

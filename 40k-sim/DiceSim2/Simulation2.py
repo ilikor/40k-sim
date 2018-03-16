@@ -17,6 +17,7 @@ from copy import deepcopy
 import matplotlib.pyplot as plt
 import numpy
 
+from DiceSim2 import SimHelper as shelp
 from DiceSim2.Attack import Attack
 from DiceSim2.Defense import Defense
 from DiceSim2 import RollingFunctions as RF
@@ -57,7 +58,7 @@ class Simulation():
             """
             for regle in shooter.hit_rules:
                 new_result, new_shooter = regle.special_rule(result, shooter)
-                if(new_result.size != 0 and new_shooter):
+                if new_result.size != 0 and new_shooter:
                     results.append(new_result)
                     shooters.append(new_shooter)
                     
@@ -70,7 +71,7 @@ class Simulation():
         Generateur des resultats de dés pour toucher
         """
         for shooter in shooters:
-            number_dices = self.determine_attack(shooter)
+            number_dices = shelp.determine_attack(shooter)
             result_dices = RF.rollingd6s(number_dices, shooter.hit_reroll)
             yield result_dices
             
@@ -84,10 +85,10 @@ class Simulation():
         avec le nombre de des = nb success
         """
         for result, shooter in zip(results, shooters):
-            if(shooter.hit_rate != "AUTO"):
+            if shooter.hit_rate != "AUTO":
                 # Les results sous le nombre requis pour toucher son enlever
                 target_number = shooter.hit_rate - shooter.hit_mod
-                if(target_number < 2):
+                if target_number < 2:
                     target_number = 2
                 result[:target_number - 1] = 0
             # print(result)
@@ -105,7 +106,7 @@ class Simulation():
         for result, shooter in zip(results, shooters):
             for regle in shooter.wnd_rules:
                 new_result, new_shooter = regle.special_rule(result, shooter)
-                if(new_result.size != 0 and new_shooter):
+                if new_result.size != 0 and new_shooter:
                     results.append(new_result)
                     shooters.append(new_shooter)
         # On prepare les attack pour la prochaine etape
@@ -119,9 +120,9 @@ class Simulation():
         shooters pour la save phase
         """
         for result, shooter in zip(results, shooters):
-            if(shooter.ap != "MW"):
-                target_number = self.determine_wound_roll(shooter) - shooter.wnd_mod
-                if(target_number < 2):
+            if shooter.ap != "MW":
+                target_number = shelp.determine_wound_roll(shooter, self.target) - shooter.wnd_mod
+                if target_number < 2:
                     target_number = 2
                 result[:target_number - 1] = 0
             # print(result)
@@ -149,9 +150,9 @@ class Simulation():
         """
         for result, shooter in zip(results, shooters):
             # print(result)
-            if(shooter.ap != "MW"):
-                target_number = self.determine_save(shooter) - shooter.sv_mod
-                if(target_number < 2):
+            if shooter.ap != "MW":
+                target_number = shelp.determine_save(shooter, self.target) - shooter.sv_mod
+                if target_number < 2:
                     target_number = 2
                 result[(target_number - 1):] = 0
             # print(result)
@@ -159,7 +160,7 @@ class Simulation():
             temp = copy(shooter)
             temp.R = sum_success
             yield temp
-            
+
     def damage_phase2(self, shooters, target):
         """
         On lance les degats 1 à 1 pour calculer 
@@ -167,347 +168,59 @@ class Simulation():
         """
         
         dead = 0
-        wounds_dealt = 0
-        
         for shooter in shooters:
-            
-            reading = str(shooter.D)
-            split = reading.split("d")
-            number = 1
-            dx = 1
-            
-            if(len(split) > 1):
-                dx = int(split[1])
-                number = int(split[0])
-            else:
-                number = int(split[0])
-            
+
+            number, dx = shelp.damage_string_reader(str(shooter.dmg))
+
             for i in range(shooter.R):
-                dmg = 0
-                for j in range(number):
-                    dmg += numpy.random.randint(1, dx + 1)
-                    
-                for fnp in target.f_n_p:
-                    fnp_result = RF.rollingd6s(dmg)
-                    fnp_result[:fnp - 1] = 0
-                    dmg -= numpy.sum(fnp_result)
-                
-                wounds_dealt += dmg
-                while(wounds_dealt >= target.w):
-                    dead += 1
-                    if(shooter.AP == "MW"):
-                        # Les MW spillover
-                        wounds_dealt -= target.w
-                    else: 
-                        # Les dmg normaux overkill
-                        wounds_dealt = 0
-                        
+                dmg = numpy.sum(RF.rollingdxs_time_dependant(number, dx + 1))
+                target.feel_no_pain(dmg)
+                dead += target.deal_wounds(shooter.AP, dmg)
+
+        wounds_dealt = target.w - target.rem_w
+
         return dead, wounds_dealt
-    
-    def hit_roll(self):
-        
-        """
-        Number est le nombre de de e lancer
-        target nombre pour être considéré un succes
-                
-        functions is a list of function to run on the results after reroll
-        Each function needs to be added in order of resolution
-        """
-        
-        # print("hit roll")
-        
-        next_shooters = []
-        
-        for i in range(len(self.shooters)):
-            
-            attack_type = self.shooters[i]
-            target = attack_type.H
-            dices = self.determine_attack(attack_type)
-            results = RF.rollingd6s(dices, attack_type.RHT)
-            # print(results)
 
-            for specialRule in attack_type.hit_rules:
-                
-                temp = specialRule.rule(results, attack_type)
-                if(temp != None):
-                    
-                    next_shooters.append(temp)
-
-            # print(results)
-            
-            mod_target = target - attack_type.Hit_Mod
-            
-            if(mod_target < 2):
-                
-                mod_target = 2
-            
-            success = results[(mod_target - 1):]
-            sum_succ = int(numpy.sum(success))
-                
-            #  print(success)
-            #  print(sum_succ)
-            
-            temp = copy(attack_type)
-            temp.R = sum_succ
-            next_shooters.append(temp)
-        
-        self.shooters = copy(next_shooters)
-        
-    def wound_roll(self):
-        
-        """
-        Number est le nombre de de à lancer
-        target nombre pour être considéré un succes  
-        
-        functions is a list of function to run on the results after reroll 
-        Each function needs to be added in order of resolution
-        """
-        
-       # print("wound roll")
-        
-        next_shooters = []
-        # print(self.shooters)
-        # print("Just Before")
-        for attack_type in self.shooters:
-
-            target = self.determine_wound_roll(attack_type)
-            results = RF.rollingd6s(attack_type.R, attack_type.RWT)
-
-            for specialRule in attack_type.wnd_rules:
-                # print(specialRule)
-                temp = specialRule.rule(results, attack_type)
-                if(temp is not None):
-                    
-                    # next_shooters.append(temp)
-                    next_shooters.extend(temp)
-                    
-            success = results[(target - 1):]
-            sum_succ = int(numpy.sum(success))  
-            
-            temp = copy(attack_type)
-            temp.R = sum_succ
-            next_shooters.append(temp)   
-        
-        self.shooters = copy(next_shooters)
-    
-    def save_roll(self):
-        
-        """
-        Number est le nombre de de à lancer
-        target nombre pour être considere un succes 
-        
-        functions is a list of function to run on the results after reroll 
-        Each function needs to be added in order of resolution
-        """
-        
-        # print("save roll")
-        
-        next_shooters = []
-        # print(self.shooters)
-        for attack_type in self.shooters:
-            # print(attack_type.AP)
-            target = self.determine_save(attack_type)
-            
-            results = RF.rollingd6s(attack_type.R)
-           # print(results)
-            
-            success = results[:(target - 1)]
-            
-            sum_succ = int(numpy.sum(success))  
-                
-            # print(success)
-           # print(sum_succ)
-            
-            temp = copy(attack_type)
-            temp.R = sum_succ
-            next_shooters.append(temp)   
-        
-        self.shooters = next_shooters
-        
-    def damage_phase(self):
-        
-        """
-        The damage phase is when you roll for damage and save damage. It will calculate to make sure overkill is taken into account
-        """
-        
-        # print("damage roll")
-        
-        dead = 0
-        wounds_dealt_to_model = 0
-        
-        for attack_type in self.shooters:
-            
-            reading = str(attack_type.D)
-            
-            split = reading.split("d")
-            
-            number = 0
-            type = 0
-            damage_array = 0
-            
-            if(len(split) > 1):  # Has another element
-                type = int(split[1])
-                number = int(split[0]) * attack_type.R
-                damage_array = RF.rollingdXs_time_dependant(number, type)
-            
-            else:  # No other element, thus dmg 1
-                type = int(split[0])
-                number = attack_type.R
-                damage_array = [type] * number
-            
-            for i in range(0, len(damage_array)):
-                
-                dmgI = damage_array[i]
-
-                for FNP in self.target.FnP:
-                    
-                    results = RF.rollingd6s(int(dmgI), 0)
-                    succ = int(numpy.sum(results[(FNP - 1):]))
-                    dmgI -= succ
-                if(attack_type.AP == "MW"):
-                    
-                    while(dmgI > 0):
-                        
-                        wounds_dealt_to_model += 1
-                        dmgI -= 1
-                        
-                        if(wounds_dealt_to_model >= self.target.W):
-                            dead += 1
-                            wounds_dealt_to_model = 0
-                            
-                        
-                else:
-                    if(dmgI + wounds_dealt_to_model >= self.target.W):
-                        dead += 1
-                        wounds_dealt_to_model = 0
-                    else:
-                        wounds_dealt_to_model += dmgI
-                    
-      #  print(dead)
-       # print(wounds_dealt_to_model)      
-        
-        return dead, wounds_dealt_to_model        
-    
-    def moral_phase(self, dead, reroll=False):
+    def moral_phase(self, dead, reroll=None):
         
         morale = self.target.moral
     
         ded = 0
         roll = numpy.random.randint(1, 7)
         total = roll + dead
-        if(total > morale):
+        if total > morale:
             
-            if(reroll == "CAN" and roll > 4):
+            if reroll == "CAN" and roll > 4:
                 
                 roll = numpy.random.randint(1, 7)
                 total = roll + dead
 
-            elif(reroll == "MUST"):
+            elif reroll == "MUST":
                 
                 roll = numpy.random.randint(1, 7)
                 total = roll + dead       
             
-            elif(reroll == "COMMI"):
+            elif reroll == "COMMI":
                 
                 ded += 1
                 roll = numpy.random.randint(1, 7)
                 total = roll + dead
             
-            elif(reroll == "KNIFE" and roll == 6):
+            elif reroll == "KNIFE" and roll == 6:
                 
                 total = 0
                 
-            elif(reroll == "AUTO"):
+            elif reroll == "AUTO":
                 
                 total = 0
             
-            if(total > morale):
-                
-                
-            
-                dedL = (total - morale)
-                ded += dedL
+            if total > morale:
+
+                dedl = (total - morale)
+                ded += dedl
             
         return ded
-        
-    
-    def determine_attack(self, attack):
-        
-        """
-        Une fonction pour determiner le nombre d'attaque des modèles avec des nombres aleatoires
-        
-        Elle fait la lecture du nombre d'attaque et fait la bonne truc lol
-        
-        """
-        retour = 0
-        reading = str(attack.R)
-        
-        split = reading.split("d")
-        number = split[0]
-        
-        if(len(split) > 1):
 
-            type = split[1]
-            
-            results = RF.rollingdXs(int(number), int(type))
-            w = numpy.arange(1, len(results) + 1, 1)
-            retour = int(numpy.inner(results, w)) # Pour une somme avec les poids w (qui sont les indices
-            
-        else:
-            
-            retour = int(number)
-               
-        return retour
-     
-    
-    def determine_wound_roll(self, attack):
-        
-        Sa = attack.s
-        Tt = self.target.t
-        wound_roll = 4
-        
-        if(Sa >= 2 * Tt):
-            
-            wound_roll = 2
-            
-        elif(Sa > Tt):
-            
-            wound_roll = 3
-            
-        elif(2 * Sa <= Tt):
-            
-            wound_roll = 6
-            
-        elif(Sa < Tt):
-            
-            wound_roll = 5
-            
-        return wound_roll
-    
-    def determine_save(self, attack):
-        """
-        Une fonction pour determiner la save du défendeur
-        Elle va applique à la save
-        Puis retourner le plus haut entre la save modifié et la save invuln
-        """
-        
-        APa = attack.ap
-        save = self.target.sv
-        
-        if(APa == "MW"):
-            
-            return 7
-        
-        mod_save = save - APa
-        
-        if(self.target.isv is not None):
-        
-            if(mod_save < self.target.isv):
-                
-                mod_save = self.target.isv
-            
-        return mod_save
-        
     def total_cost_attack(self):
         """
         Une fonction qui calcul le prix en point de toutes les unités impliquées dans l'attaque
@@ -545,31 +258,31 @@ class Simulation():
         
         return deads, wounds, eff, moral
     
-    def add_Attacker(self, attacker):
+    def add_attacker(self, attacker):
         
         self.attackers.append(attacker)
       
-    def add_Attackers(self, attackers_Init):
+    def add_attackers(self, attackers_init):
         
-        self.attackers = attackers_Init
+        self.attackers = attackers_init
     
-    def change_Defender(self, defender_Init):
+    def change_defender(self, defender_init):
         
-        self.target = defender_Init
+        self.target = defender_init
         
     def add_default_attacker(self):
         
         temp = Attack()
-        temp.R = 1000
-        temp.S = 6
-        temp.D = "1"
-        temp.AP = -1
+        temp.r = 1000
+        temp.str = 6
+        temp.dmg = "1"
+        temp.ap = -1
         temp.set_reroll(2, 2)
         # temp.hit_rules.append(self.exploding_dices)
         # temp.hit_rules.append(self.ambush_of_blades)
         self.attackers.append(temp)
     
-    def overall_Sim(self, number):
+    def overall_sim(self, number):
         """
         
         repeat the simulate and accumulates the results
@@ -593,8 +306,8 @@ class Simulation():
         # print(wav)
         
         # print(eff)
-        #print(dead_array)
-        #print(moral)
+        # print(dead_array)
+        # print(moral)
         return dead_array, wounds_but_no_dead, eff, moral
 
     def reset_sim(self):
@@ -606,32 +319,30 @@ class Simulation():
     def sim_test(self):
         
         temp = Attack()
-        temp.hit_rate = 4
-        temp.R = 100
+        temp.attack = "4"
+        temp.r = 100
         temp.s = 3
-        temp.D = 1
+        temp.dmg = "1"
         temp.ap = 0
-        #temp.hit_reroll = 1
-        temp.add_wnd_rule(["4+,6+","1,1","Haywire"])
+        # temp.hit_reroll = 1
+        # temp.add_wnd_rule(["4+,6+", "1,1", "Haywire"])
         
-        self.add_Attacker(temp)
+        self.add_attacker(temp)
         
         self.shooters = deepcopy(self.attackers)
 
         wound_shooters = self.hit_phase(self.shooters, self.target)
-        #print(wound_shooters)
+        # print(wound_shooters)
         save_shooters = self.wound_phase(wound_shooters, self.target)
         print(save_shooters)
         dmg_shooters = self.save_phase(save_shooters, self.target)
-        #print(dmg_shooters)
+        # print(dmg_shooters)
         deads, wounds = self.damage_phase2(dmg_shooters, self.target)
         print(deads, wounds)
         moral = self.moral_phase(deads)
         print(moral)
         eff = self.efficiency(moral)
-        
-        
-    
+
     def time_testing(self):
         # Fonction pour tester la complexité de l'algo
         
@@ -645,9 +356,9 @@ class Simulation():
         for r in list_r:
             print(r)
             temp = Attack()
-            temp.R = r
+            temp.r = r
             temp.s = 6
-            temp.D = "1d6"
+            temp.dmg = "1d6"
             temp.ap = 0
             #temp.hit_reroll = 1
             
@@ -660,6 +371,7 @@ class Simulation():
         #plt.plot(list_r, list_hit)
         plt.plot(list_r, list_total)
         plt.show()
+
 
 if __name__ == '__main__':
     
